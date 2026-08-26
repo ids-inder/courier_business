@@ -68,14 +68,19 @@ pluggable layer (`sourcing/`), so if you have an **IndiaMART/JustDial seller
 account**, their *official* lead exports/APIs can be imported cleanly.
 
 **2. Deliverability is throttled on purpose (the warm-up ramp).**
-Cold email from a fresh domain lands in spam unless you ramp slowly and keep
-volume low and personalised. The pipeline starts at ~10 emails/day and climbs
-(`WARMUP_*` in `.env`). This is a visible knob you control — raise it as your
-domain's reputation builds. Blasting on day one gets the domain blacklisted and
-gets you zero meetings; the ramp is *how volume actually reaches inboxes*.
+Cold email lands in spam unless you ramp slowly and keep volume low. The
+pipeline starts at ~10 emails/day and climbs (`WARMUP_*` in `.env`). This is a
+visible knob you control — raise it as reputation builds. Blasting on day one
+gets the sender blacklisted and gets you zero meetings; the ramp is *how volume
+actually reaches inboxes*.
 
-You will also need **SPF, DKIM, and DMARC** DNS records on your sending domain.
-Setup instructions come with the mail module.
+Because we send **through Gmail** (`inder.traders89@gmail.com`), Google handles
+SPF / DKIM / DMARC for `gmail.com` automatically — **no domain and no DNS
+records are needed**. The trade-offs: a consumer Gmail address is slightly less
+"corporate" to a B2B recipient, and Gmail caps sending at ~**500 emails/day**
+(our warm-up max of 40 sits well under). Emails are **preset templates** with
+merge fields (`{company}`, `{industry}`, `{area}`) so each one is lightly
+personalised rather than obviously bulk.
 
 ---
 
@@ -94,18 +99,19 @@ leads table; see `models.py` / the mail-in module.)
 2. `cp .env.example .env` and fill every value. `.env.example` documents each one.
 3. Create a Google **service account**, download its JSON to `credentials/`, and
    share your Sheet + Calendar with the service account's email.
-4. Get an **Anthropic API key** (console.anthropic.com).
-5. Point `SMTP_*` / `IMAP_*` at a **dedicated** address (e.g. `sales@…`), not
-   your personal inbox.
+4. Generate a Gmail **App Password** and put it in `SMTP_PASSWORD` / `IMAP_PASSWORD`.
 
 ### What you need to provide (the setup checklist)
-- [ ] SMTP + IMAP host / port / user / pass for a dedicated sending address
-- [ ] The sending **domain** (so we can spec SPF / DKIM / DMARC)
-- [ ] A small **Ubuntu VPS** with SSH access
-- [ ] **Anthropic API key**
+- [ ] Gmail **App Password** for `inder.traders89@gmail.com` (2-Step Verif. on, IMAP enabled)
+- [ ] SSH access to the **VPS** (`deploy@80.241.222.114`)
 - [ ] Google **service-account JSON** + the Sheet ID + Calendar ID
-- [ ] **Business details**: name, services, coverage, website, phone, signature
+- [ ] Lead discovery: a **Places API key** *or* the free OpenStreetMap route
+- [ ] **Business details**: name, services, coverage, phone, signature
 - [ ] **Booking rules**: days/hours you take meetings, duration, min notice
+- [ ] Approve the **email templates** (first-touch + follow-ups)
+
+_No custom domain and no Anthropic key required — Gmail authenticates the mail,
+and outreach uses preset templates rather than AI-generated copy._
 
 ---
 
@@ -117,9 +123,10 @@ courier_outreach/
   config.py        # all settings, loaded from env (.env in dev)
   models.py        # lead lifecycle, reply classes, Sheet schema
   db.py            # SQLite: leads, messages, send_budget, audit
-  sourcing/        # (next) Places discovery + website email extraction
+  sourcing/        # (next) lead discovery + website email extraction
+  templates/       # (next) preset email templates (first-touch + follow-ups)
   mail/            # (next) SMTP sender + warm-up governor; IMAP reply reader
-  brain/           # (next) Claude drafting + reply classification
+  triage/          # (next) rule-based reply tagging (unsubscribe auto-catch)
   cockpit/         # (next) Google Sheet + Calendar sync
   app/             # (next) the "Approvals & Chat" web console
   orchestrator.py  # (next) the scheduled loop
