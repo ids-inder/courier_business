@@ -96,6 +96,24 @@ def init_db(conn: sqlite3.Connection) -> None:
 
 # --- Leads ------------------------------------------------------------------
 
+def find_existing(conn: sqlite3.Connection, company: str, area: str | None,
+                  email: str | None) -> sqlite3.Row | None:
+    """The de-dupe rule, in one place: match by email if we have one, else by
+    (company, area). Returns the existing lead row, or None.
+    """
+    email = (email or "").strip().lower() or None
+    if email:
+        row = conn.execute(
+            "SELECT * FROM leads WHERE lower(contact_email) = ?", (email,)
+        ).fetchone()
+        if row is not None:
+            return row
+    return conn.execute(
+        "SELECT * FROM leads WHERE company = ? AND IFNULL(area,'') = IFNULL(?,'')",
+        (company.strip(), (area or "").strip() or None),
+    ).fetchone()
+
+
 def upsert_lead(conn: sqlite3.Connection, **fields) -> int:
     """Insert a discovered lead, or return the existing id if we already have
     it (matched by email, else by company+area). Never creates a duplicate.
@@ -105,16 +123,7 @@ def upsert_lead(conn: sqlite3.Connection, **fields) -> int:
     company = fields["company"].strip()
     area = (fields.get("area") or "").strip() or None
 
-    existing = None
-    if email:
-        existing = conn.execute(
-            "SELECT id FROM leads WHERE lower(contact_email) = ?", (email,)
-        ).fetchone()
-    if existing is None:
-        existing = conn.execute(
-            "SELECT id FROM leads WHERE company = ? AND IFNULL(area,'') = IFNULL(?,'')",
-            (company, area),
-        ).fetchone()
+    existing = find_existing(conn, company, area, email)
     if existing is not None:
         return int(existing["id"])
 
