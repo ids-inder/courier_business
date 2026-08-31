@@ -1,0 +1,13 @@
+Subject: Courier & cargo pickup for {company}
+
+Hello,
+
+I'm {signature_name} from {business_name}. We handle {services} pickups from {area} and deliver {coverage} — and {edge}.
+
+If {company} sends out shipments regularly, I'd value a short in-person meeting to understand your dispatch needs and see how we can help.
+
+Would sometime this week suit you? You can reach me directly at {phone}.
+
+Thanks,
+{signature_name}
+{business_name} · {phone}

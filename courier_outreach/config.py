@@ -128,6 +128,7 @@ class BusinessProfile:
     name: str
     services: str
     coverage: str
+    edge: str            # the one-line differentiator used in outreach copy
     website: str
     phone: str
     signature_name: str
@@ -136,9 +137,14 @@ class BusinessProfile:
     @classmethod
     def load(cls) -> "BusinessProfile":
         return cls(
-            name=_get("BUSINESS_NAME", "") or "",
-            services=_get("BUSINESS_SERVICES", "") or "",
-            coverage=_get("BUSINESS_COVERAGE", "") or "",
+            name=_get("BUSINESS_NAME", "Deep Cargo Movers") or "Deep Cargo Movers",
+            services=_get("BUSINESS_SERVICES", "courier and cargo")
+            or "courier and cargo",
+            coverage=_get("BUSINESS_COVERAGE", "pan-India and worldwide")
+            or "pan-India and worldwide",
+            edge=_get("BUSINESS_EDGE",
+                      "we handle every consignment with the same care as our own")
+            or "we handle every consignment with the same care as our own",
             website=_get("BUSINESS_WEBSITE", "") or "",
             phone=_get("BUSINESS_PHONE", "") or "",
             signature_name=_get("SIGNATURE_NAME", "") or "",

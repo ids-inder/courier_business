@@ -29,6 +29,8 @@ AREAS: dict[str, tuple[float, float, float, float]] = {
     "Tricity": (30.60, 76.60, 30.82, 76.90),
     # Baddi + Barotiwala + Nalagarh (BBN industrial belt, HP)
     "Baddi": (30.85, 76.65, 31.10, 76.95),
+    # Haridwar + SIDCUL/BHEL industrial area (Uttarakhand)
+    "Haridwar": (29.85, 77.95, 30.05, 78.25),
 }
 
 # Public Overpass endpoints; we try them in order on failure.
