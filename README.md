@@ -123,17 +123,30 @@ courier_outreach/
   config.py        # all settings, loaded from env (.env in dev)
   models.py        # lead lifecycle, reply classes, Sheet schema
   db.py            # SQLite: leads, messages, send_budget, audit
-  sourcing/        # (next) lead discovery + website email extraction
-  templates/       # (next) preset email templates (first-touch + follow-ups)
-  mail/            # (next) SMTP sender + warm-up governor; IMAP reply reader
-  triage/          # (next) rule-based reply tagging (unsubscribe auto-catch)
-  cockpit/         # (next) Google Sheet + Calendar sync
-  app/             # (next) the "Approvals & Chat" web console
-  orchestrator.py  # (next) the scheduled loop
+  sourcing/        # lead discovery (OSM) + website email extraction + CSV import
+  templates/       # preset email templates (first-touch + 2 follow-ups)
+  mail/            # SMTP sender + warm-up governor; IMAP reply reader
+  triage/          # rule-based reply tagging (unsubscribe auto-catch)
+  cockpit/         # Google Sheet sync + Calendar booking
+  app/             # the "Approvals & Chat" web console (FastAPI)
+  orchestrator.py  # the scheduled cycle + CLI (python -m courier_outreach)
+deploy/            # systemd units + setup.sh for the VPS
 ```
+
+## Running it
+
+```bash
+python -m courier_outreach init-db   # create the local DB
+python -m courier_outreach source    # discover leads (OSM) [+ --csv seeds/leads.csv]
+python -m courier_outreach run        # one cycle: read replies -> send due -> sync Sheet
+python -m courier_outreach serve      # the Approvals & Chat console (port APP_PORT)
+```
+
+On the VPS these are wired to systemd (console always on; cycle every 15 min;
+sourcing daily). See `deploy/README.md`.
 
 ## Status
 
-Under active construction. Done: foundation (config, data model, SQLite layer,
-tested). Next: sourcing → mail → brain → cockpit → app → orchestrator/deploy.
-Track progress in the task list.
+All eight slices built and tested: foundation, sourcing, mail out/in, templates
++ triage, Sheet + Calendar, the console app, and the orchestrator + deploy.
+Live runs (OSM, SMTP/IMAP, Google) happen on the VPS with real credentials.

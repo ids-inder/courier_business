@@ -1,0 +1,15 @@
+[Unit]
+Description=Deep Cargo Movers — outreach Approvals & Chat console
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=deploy
+WorkingDirectory=/home/deploy/courier_business
+ExecStart=/home/deploy/courier_business/.venv/bin/python -m courier_outreach serve
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

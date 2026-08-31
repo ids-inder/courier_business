@@ -1,0 +1,11 @@
+[Unit]
+Description=Deep Cargo Movers — lead sourcing (OpenStreetMap discovery)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=deploy
+WorkingDirectory=/home/deploy/courier_business
+# Add "--csv seeds/leads.csv" to also import a seed list each run.
+ExecStart=/home/deploy/courier_business/.venv/bin/python -m courier_outreach source
