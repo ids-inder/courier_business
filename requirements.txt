@@ -19,6 +19,7 @@ google-auth>=2.32.0
 fastapi>=0.111.0
 uvicorn[standard]>=0.30.0
 jinja2>=3.1.4                 # server-rendered console templates
+python-multipart>=0.0.9      # form handling for the console
 
 # --- Dev / quality ---
 pytest>=8.2.0
