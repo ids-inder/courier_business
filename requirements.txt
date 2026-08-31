@@ -1,6 +1,7 @@
 # --- Core ---
 python-dotenv>=1.0.1          # load .env
 tenacity>=8.5.0               # retry/backoff for network calls
+tzdata>=2024.1               # timezone db (Asia/Kolkata) on slim VPS images
 
 # --- The brain ---
 anthropic>=0.40.0             # Claude API: drafting, reply classification
